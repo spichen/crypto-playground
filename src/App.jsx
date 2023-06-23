@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -43,10 +43,9 @@ const nodeTypes = { blockNode: BlockNode };
 export default function App() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const connectingNodeId = useRef(null);
+
     const getId = () => {
-        console.log("here");
-        return nodes.length + 1;
+        return (nodes.length + 1).toString();
     };
 
     const onConnect = useCallback(
@@ -57,20 +56,26 @@ export default function App() {
         const id = getId();
         const newNode = {
             id,
-            position: { x: id * 200, y: 400 },
+            position: { x: id * 300 - 200, y: 400 },
             data: { label: `Block ${id}` },
             type: "blockNode",
             height: 400,
-            width: 400,
+            width: 100,
         };
-
         setNodes((nds) => nds.concat(newNode));
-        setEdges((eds) =>
-            eds.concat({ id, source: connectingNodeId.current, target: id })
-        );
-
-        console.log(nodes);
     };
+
+    useEffect(() => {
+        const edges = nodes.slice(1).map((item) => {
+            const index = nodes.findIndex((n) => n.id === item.id);
+            return {
+                id: `e${nodes[index - 1].id}-${item.id}`,
+                source: nodes[index - 1].id,
+                target: item.id,
+            };
+        });
+        setEdges(edges);
+    }, [nodes]);
     return (
         <ChakraProvider>
             <div style={{ width: "100vw", height: "100vh" }}>
