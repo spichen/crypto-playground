@@ -71,7 +71,7 @@ const BlockNode = () => {
         <>
             <Card variant="outline">
                 <CardHeader>
-                    <Heading size="md">Block {nodeId}</Heading>
+                    <Heading size="md"> {nodeId}</Heading>
                 </CardHeader>
                 <CardBody>
                     <VStack spacing="24px">
