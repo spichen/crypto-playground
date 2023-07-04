@@ -21,7 +21,6 @@ var MD5 = new Hashes.MD5();
 const BlockNode = () => {
     const nodeId = useNodeId();
     const nodes = useNodes();
-
     const { setNodes } = useReactFlow();
 
     const [hash, setHash] = useState("");
@@ -30,7 +29,21 @@ const BlockNode = () => {
     const [preHash, setPreHash] = useState(0);
 
     const thisNodeIndex = nodes.findIndex((node) => node.id === nodeId);
-    const previousNode = nodes[thisNodeIndex - 1];
+
+    const findPreviousBlockNode = (currentNodeIndex) => {
+        if (currentNodeIndex > -1)
+            if (
+                nodes[currentNodeIndex - 1] &&
+                nodes[currentNodeIndex - 1].type === "blockNode"
+            ) {
+                return nodes[currentNodeIndex - 1];
+            } else {
+                return findPreviousBlockNode(currentNodeIndex - 1);
+            }
+        else return null;
+    };
+
+    const previousNode = findPreviousBlockNode(thisNodeIndex);
     const previousNodeHash = previousNode && previousNode.hash;
 
     const onChange = useCallback((evt) => {
@@ -40,13 +53,6 @@ const BlockNode = () => {
     useEffect(() => {
         setHash(MD5.hex(text + previousNodeHash));
     }, [text]);
-
-    useEffect(() => {
-        if (previousNodeHash) {
-            setPreHash(previousNodeHash);
-            setHash(MD5.hex(text + previousNodeHash));
-        }
-    }, [previousNodeHash]);
 
     useEffect(() => {
         const updatedNodes = nodes.map((node) => {
@@ -62,6 +68,15 @@ const BlockNode = () => {
 
         setNodes(updatedNodes);
     }, [hash]);
+
+    useEffect(() => {
+        if (previousNodeHash) {
+            setPreHash(previousNodeHash);
+            setHash(MD5.hex(text + previousNodeHash));
+        } else {
+            setHash(MD5.hex(text));
+        }
+    }, [previousNodeHash]);
 
     function mineData() {
         setMineHash(hash);

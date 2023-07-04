@@ -59,7 +59,7 @@ export default function App() {
     const [walletNode, setWalletNode, onWalletChange] =
         useNodesState(initialWalletNode);
 
-    const generateId = (itemType) => {
+    const generateNewNodeId = (itemType) => {
         const filteredNode = nodes.filter((item) => item.type === itemType);
         return (filteredNode.length + 1).toString();
     };
@@ -68,8 +68,8 @@ export default function App() {
         (params) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
-    const addBlock = () => {
-        const id = generateId("blockNode");
+    const addBlockNode = () => {
+        const id = generateNewNodeId("blockNode");
         const filteredNode = nodes.filter((item) => item.type === "blockNode");
 
         const lastNode = filteredNode[filteredNode.length - 1];
@@ -84,8 +84,8 @@ export default function App() {
         setNodes((nds) => nds.concat(newNode));
     };
 
-    const addWallet = () => {
-        const id = generateId("walletNode");
+    const addWalletNode = () => {
+        const id = generateNewNodeId("walletNode");
         const filteredNode = nodes.filter((item) => item.type === "walletNode");
 
         const lastNode = filteredNode[filteredNode.length - 1];
@@ -128,14 +128,14 @@ export default function App() {
                             <Button
                                 colorScheme="teal"
                                 size="lg"
-                                onClick={addBlock}
+                                onClick={addBlockNode}
                             >
                                 Add Block
                             </Button>
                             <Button
                                 colorScheme="teal"
                                 size="lg"
-                                onClick={addWallet}
+                                onClick={addWalletNode}
                             >
                                 Add Wallet
                             </Button>
