@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect } from "react";
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -11,25 +11,15 @@ import ReactFlow, {
 } from "reactflow";
 import BlockNode from "./BlockNode.jsx";
 import "reactflow/dist/style.css";
-import { ChakraProvider, Button } from "@chakra-ui/react";
+import { ChakraProvider, Button, Icon, Link, Flex } from "@chakra-ui/react";
+import { BsGithub } from "react-icons/bs";
+
 import WalletNode from "./WalletNode.jsx";
 const initialNodes = [
     {
         id: "block-1",
         data: { label: "Block 1" },
         position: { x: 100, y: 400 },
-        type: "blockNode",
-    },
-    {
-        id: "block-2",
-        data: { label: "Block 2" },
-        position: { x: 400, y: 400 },
-        type: "blockNode",
-    },
-    {
-        id: "block-3",
-        data: { label: "Block 3" },
-        position: { x: 700, y: 400 },
         type: "blockNode",
     },
 ];
@@ -124,21 +114,35 @@ export default function App() {
                         onConnect={onConnect}
                         nodeTypes={nodeTypes}
                     >
+                        <Flex
+                            justifyContent="right"
+                            minWidth="max-content"
+                            margin="3"
+                        >
+                            <Link
+                                href="https://github.com/Mubeena17/blockchain-visualized"
+                                isExternal
+                            >
+                                <Icon as={BsGithub} w={8} h={8} />
+                            </Link>
+                        </Flex>
                         <Panel position="bottom-center">
-                            <Button
-                                colorScheme="teal"
-                                size="lg"
-                                onClick={addBlockNode}
-                            >
-                                Add Block
-                            </Button>
-                            <Button
-                                colorScheme="teal"
-                                size="lg"
-                                onClick={addWalletNode}
-                            >
-                                Add Wallet
-                            </Button>
+                            <Flex gap={2}>
+                                <Button
+                                    colorScheme="teal"
+                                    size="lg"
+                                    onClick={addBlockNode}
+                                >
+                                    Add Block
+                                </Button>
+                                <Button
+                                    colorScheme="teal"
+                                    size="lg"
+                                    onClick={addWalletNode}
+                                >
+                                    Add Wallet
+                                </Button>
+                            </Flex>
                         </Panel>
                         <Controls />
                         <MiniMap />

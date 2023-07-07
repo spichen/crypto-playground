@@ -55,11 +55,19 @@ const BlockNode = () => {
     }, [text]);
 
     useEffect(() => {
+        if (previousNodeHash) {
+            setPreHash(previousNodeHash);
+            setHash(MD5.hex(text + previousNodeHash));
+        } else {
+            setHash(MD5.hex(text));
+        }
+    }, [previousNodeHash]);
+
+    useEffect(() => {
         const updatedNodes = nodes.map((node) => {
             if (node.id !== nodeId) {
                 return node;
             }
-
             return {
                 ...node,
                 hash,
@@ -68,15 +76,6 @@ const BlockNode = () => {
 
         setNodes(updatedNodes);
     }, [hash]);
-
-    useEffect(() => {
-        if (previousNodeHash) {
-            setPreHash(previousNodeHash);
-            setHash(MD5.hex(text + previousNodeHash));
-        } else {
-            setHash(MD5.hex(text));
-        }
-    }, [previousNodeHash]);
 
     function mineData() {
         setMineHash(hash);
