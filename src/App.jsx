@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -11,43 +11,71 @@ import ReactFlow, {
 } from "reactflow";
 import BlockNode from "./BlockNode.jsx";
 import "reactflow/dist/style.css";
-import { ChakraProvider, Button, Icon, Link, Flex } from "@chakra-ui/react";
+import {
+    ChakraProvider,
+    Button,
+    Icon,
+    Link,
+    Flex,
+    Box,
+} from "@chakra-ui/react";
 import { BsGithub } from "react-icons/bs";
-
 import WalletNode from "./WalletNode.jsx";
-const initialNodes = [
-    {
-        id: "block-1",
-        data: { label: "Block 1" },
-        position: { x: 100, y: 400 },
-        type: "blockNode",
-    },
-];
 
 const initialEdges = [
     { id: "e1-2", source: "1", target: "2" },
     { id: "e2-3", source: "2", target: "3" },
 ];
 
-const initialWalletNode = [
-    {
-        id: "wallet-1",
-        data: { label: "Wallet" },
-        position: { x: 100, y: 100 },
-        type: "walletNode",
-    },
-];
-
 const nodeTypes = { blockNode: BlockNode, walletNode: WalletNode };
 
 export default function App() {
+    const [memPool, setMemPool] = useState([]);
+    const onTransact = (from, to, amount) => {
+        setMemPool((currentMemPool) => {
+            const transaction = { from, to, amount };
+            return [...currentMemPool, transaction];
+        });
+    };
+
+    const addBlockNode = () => {
+        const id = generateNewNodeId("blockNode");
+        const filteredNode = nodes.filter((item) => item.type === "blockNode");
+
+        const lastNode = filteredNode[filteredNode.length - 1];
+        const newNode = {
+            id: `block-${id}`,
+            position: { x: lastNode.position.x + 300, y: 500 },
+            data: { label: `Block ${id}`, memPool, addBlockNode },
+            type: "blockNode",
+            height: 400,
+            width: 100,
+        };
+        setNodes((nds) => nds.concat(newNode));
+    };
+
+    const initialNodes = [
+        {
+            id: "block-1",
+            data: { label: "Block 1", memPool, addBlockNode },
+            position: { x: 100, y: 500 },
+            type: "blockNode",
+        },
+    ];
+
+    const initialWalletNode = [
+        {
+            id: "wallet-1",
+            data: { label: "Wallet", onTransact },
+            position: { x: 100, y: 50 },
+            type: "walletNode",
+        },
+    ];
     const [nodes, setNodes, onNodesChange] = useNodesState([
         ...initialNodes,
         ...initialWalletNode,
     ]);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [walletNode, setWalletNode, onWalletChange] =
-        useNodesState(initialWalletNode);
 
     const generateNewNodeId = (itemType) => {
         const filteredNode = nodes.filter((item) => item.type === itemType);
@@ -58,21 +86,6 @@ export default function App() {
         (params) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
-    const addBlockNode = () => {
-        const id = generateNewNodeId("blockNode");
-        const filteredNode = nodes.filter((item) => item.type === "blockNode");
-
-        const lastNode = filteredNode[filteredNode.length - 1];
-        const newNode = {
-            id: `block-${id}`,
-            position: { x: lastNode.position.x + 300, y: 400 },
-            data: { label: `Block ${id}` },
-            type: "blockNode",
-            height: 400,
-            width: 100,
-        };
-        setNodes((nds) => nds.concat(newNode));
-    };
 
     const addWalletNode = () => {
         const id = generateNewNodeId("walletNode");
@@ -81,14 +94,38 @@ export default function App() {
         const lastNode = filteredNode[filteredNode.length - 1];
         const newNode = {
             id: `wallet-${id}`,
-            position: { x: lastNode.position.x + 300, y: 100 },
-            data: { label: `Wallet ${id}` },
+            position: { x: lastNode.position.x + 500, y: 50 },
+            data: { label: `Wallet ${id}`, onTransact },
             type: "walletNode",
             height: 400,
             width: 100,
         };
         setNodes((nds) => nds.concat(newNode));
     };
+
+    useEffect(() => {
+        if (memPool.length % 3 === 0) {
+            addBlockNode();
+        }
+        setNodes((nds) => {
+            if (nds) {
+                console.log("nds", nds);
+                const blockNodes = nds.filter(
+                    (node) => node.type === "blockNode"
+                );
+                const lastBlockNode = blockNodes[blockNodes.length - 1];
+                return nds.map((node) => {
+                    if (node.id === lastBlockNode.id) {
+                        node.data = {
+                            ...node.data,
+                            memPool,
+                        };
+                    }
+                    return node;
+                });
+            }
+        });
+    }, [memPool]);
 
     useEffect(() => {
         const filteredNode = nodes.filter((item) => item.type === "blockNode");
@@ -113,6 +150,7 @@ export default function App() {
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
                         nodeTypes={nodeTypes}
+                        fitView
                     >
                         <Flex
                             justifyContent="right"
@@ -131,13 +169,6 @@ export default function App() {
                                 <Button
                                     colorScheme="teal"
                                     size="lg"
-                                    onClick={addBlockNode}
-                                >
-                                    Add Block
-                                </Button>
-                                <Button
-                                    colorScheme="teal"
-                                    size="lg"
                                     onClick={addWalletNode}
                                 >
                                     Add Wallet
@@ -147,6 +178,11 @@ export default function App() {
                         <Controls />
                         <MiniMap />
                         <Background variant="dots" gap={12} size={1} />
+                        <Box w="30%" p={4}>
+                            {memPool.map((item, index) => {
+                                return <div key={index}> {item.from}</div>;
+                            })}
+                        </Box>
                     </ReactFlow>
                 </ReactFlowProvider>
             </div>

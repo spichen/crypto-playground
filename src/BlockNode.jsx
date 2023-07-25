@@ -18,7 +18,7 @@ import {
 
 var MD5 = new Hashes.MD5();
 
-const BlockNode = () => {
+const BlockNode = ({ data }) => {
     const nodeId = useNodeId();
     const nodes = useNodes();
     const { setNodes } = useReactFlow();
@@ -46,21 +46,12 @@ const BlockNode = () => {
     const previousNode = findPreviousBlockNode(thisNodeIndex);
     const previousNodeHash = previousNode && previousNode.hash;
 
-    const onChange = useCallback((evt) => {
-        setText(evt.target.value);
-    }, []);
+    useEffect(() => {
+        setHash(MD5.hex(data.memPool + previousNodeHash));
+    }, [data.memPool]);
 
     useEffect(() => {
-        setHash(MD5.hex(text + previousNodeHash));
-    }, [text]);
-
-    useEffect(() => {
-        if (previousNodeHash) {
-            setPreHash(previousNodeHash);
-            setHash(MD5.hex(text + previousNodeHash));
-        } else {
-            setHash(MD5.hex(text));
-        }
+        if (previousNodeHash) setPreHash(previousNodeHash);
     }, [previousNodeHash]);
 
     useEffect(() => {
@@ -108,16 +99,6 @@ const BlockNode = () => {
                                 value={preHash}
                                 className="nodrag"
                                 disabled
-                            />
-                        </FormControl>
-
-                        <FormControl>
-                            <FormLabel>Data</FormLabel>
-                            <Input
-                                id="data"
-                                name="data"
-                                onChange={onChange}
-                                className="nodrag"
                             />
                         </FormControl>
                     </VStack>
