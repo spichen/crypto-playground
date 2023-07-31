@@ -46,7 +46,12 @@ export default function App() {
         const newNode = {
             id: `block-${id}`,
             position: { x: lastNode.position.x + 300, y: 500 },
-            data: { label: `Block ${id}`, memPool, addBlockNode },
+            data: {
+                label: `Block ${id}`,
+                memPool,
+                addBlockNode,
+                isMined: false,
+            },
             type: "blockNode",
             height: 400,
             width: 100,
@@ -57,7 +62,7 @@ export default function App() {
     const initialNodes = [
         {
             id: "block-1",
-            data: { label: "Block 1", memPool, addBlockNode },
+            data: { label: "Block 1", memPool, addBlockNode, isMined: false },
             position: { x: 100, y: 500 },
             type: "blockNode",
         },
@@ -123,11 +128,33 @@ export default function App() {
         });
     }, [memPool]);
 
+    const updateNode = () => {
+        setNodes((nds) => {
+            if (nds) {
+                const blockNodes = nds.filter(
+                    (node) => node.type === "blockNode"
+                );
+                const lastBlockNode = blockNodes[blockNodes.length - 1];
+                return nds.map((node) => {
+                    if (node.id === lastBlockNode.id) {
+                        node.data = {
+                            ...node.data,
+                            memPool,
+                            isMined: true,
+                        };
+                    }
+                    return node;
+                });
+            }
+        });
+    };
+
     useEffect(() => {
         const filteredNode = nodes.filter((item) => item.type === "blockNode");
         const lastBlockNode = filteredNode[filteredNode.length - 1];
 
         if (lastBlockNode.hash && lastBlockNode.hash.charAt(0) === "0") {
+            updateNode();
             addBlockNode();
             setMemPool([]);
         }

@@ -27,7 +27,6 @@ const BlockNode = ({ data }) => {
     const [mineHash, setMineHash] = useState("");
     const [preHash, setPreHash] = useState(0);
     const [nonce, setNonce] = useState(0);
-
     const thisNodeIndex = nodes.findIndex((node) => node.id === nodeId);
 
     const findPreviousBlockNode = (currentNodeIndex) => {
@@ -47,16 +46,20 @@ const BlockNode = ({ data }) => {
     const previousNodeHash = previousNode && previousNode.hash;
 
     useEffect(() => {
-        setHash(MD5.hex(data.memPool + previousNodeHash));
-    }, [data.memPool]);
+        if (!data.isMined) {
+            setHash(MD5.hex(data.memPool + previousNodeHash + nonce));
+        }
+    }, [data.memPool, nonce]);
 
     useEffect(() => {
-        const id = setInterval(() => setNonce((nonce) => nonce + 1), 1000);
-
-        return () => {
-            clearInterval(id);
-        };
-    }, []);
+        let intervalID;
+        if (!data.isMined) {
+            intervalID = setInterval(() => {
+                setNonce((nonce) => nonce + 1);
+            }, 1000);
+        }
+        return () => clearInterval(intervalID);
+    }, [data.isMined]);
 
     useEffect(() => {
         if (previousNodeHash) setPreHash(previousNodeHash);
