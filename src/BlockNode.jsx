@@ -24,9 +24,9 @@ const BlockNode = ({ data }) => {
     const { setNodes } = useReactFlow();
 
     const [hash, setHash] = useState("");
-    const [text, setText] = useState("");
     const [mineHash, setMineHash] = useState("");
     const [preHash, setPreHash] = useState(0);
+    const [nonce, setNonce] = useState(0);
 
     const thisNodeIndex = nodes.findIndex((node) => node.id === nodeId);
 
@@ -51,6 +51,14 @@ const BlockNode = ({ data }) => {
     }, [data.memPool]);
 
     useEffect(() => {
+        const id = setInterval(() => setNonce((nonce) => nonce + 1), 1000);
+
+        return () => {
+            clearInterval(id);
+        };
+    }, []);
+
+    useEffect(() => {
         if (previousNodeHash) setPreHash(previousNodeHash);
     }, [previousNodeHash]);
 
@@ -67,10 +75,6 @@ const BlockNode = ({ data }) => {
 
         setNodes(updatedNodes);
     }, [hash]);
-
-    function mineData() {
-        setMineHash(hash);
-    }
 
     return (
         <>
@@ -101,15 +105,20 @@ const BlockNode = ({ data }) => {
                                 disabled
                             />
                         </FormControl>
+                        <FormControl>
+                            <FormLabel>Nonce</FormLabel>
+                            <Input
+                                id="nonce"
+                                name="nonce"
+                                value={nonce}
+                                className="nodrag"
+                                disabled
+                            />
+                        </FormControl>
                     </VStack>
                 </CardBody>
 
                 <CardFooter>
-                    {!mineHash && (
-                        <Button colorScheme="teal" onClick={mineData}>
-                            Mine
-                        </Button>
-                    )}
                     {mineHash && (
                         <div>
                             {hash === mineHash ? (

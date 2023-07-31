@@ -38,7 +38,7 @@ export default function App() {
         });
     };
 
-    const addBlockNode = () => {
+    const addBlockNode = (sets) => {
         const id = generateNewNodeId("blockNode");
         const filteredNode = nodes.filter((item) => item.type === "blockNode");
 
@@ -94,7 +94,7 @@ export default function App() {
         const lastNode = filteredNode[filteredNode.length - 1];
         const newNode = {
             id: `wallet-${id}`,
-            position: { x: lastNode.position.x + 500, y: 50 },
+            position: { x: lastNode.position.x + 300, y: 50 },
             data: { label: `Wallet ${id}`, onTransact },
             type: "walletNode",
             height: 400,
@@ -104,12 +104,8 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (memPool.length % 3 === 0) {
-            addBlockNode();
-        }
         setNodes((nds) => {
             if (nds) {
-                console.log("nds", nds);
                 const blockNodes = nds.filter(
                     (node) => node.type === "blockNode"
                 );
@@ -129,6 +125,12 @@ export default function App() {
 
     useEffect(() => {
         const filteredNode = nodes.filter((item) => item.type === "blockNode");
+        const lastBlockNode = filteredNode[filteredNode.length - 1];
+
+        if (lastBlockNode.hash && lastBlockNode.hash.charAt(0) === "0") {
+            addBlockNode();
+            setMemPool([]);
+        }
         const edges = filteredNode.slice(1).map((item) => {
             const index = filteredNode.findIndex((n) => n.id === item.id);
             return {

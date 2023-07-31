@@ -81,18 +81,19 @@ const WalletNode = ({ id, data }) => {
                                     setToAddress(evt.target.value);
                                 }}
                             />
-                            <Button
-                                colorScheme="teal"
-                                size="lg"
-                                onClick={proceedTransact}
-                            >
-                                Proceed Transact
-                            </Button>
                         </FormControl>
                     </VStack>
                 </CardBody>
 
-                <CardFooter></CardFooter>
+                <CardFooter>
+                    <Button
+                        colorScheme="teal"
+                        size="lg"
+                        onClick={proceedTransact}
+                    >
+                        Proceed Transact
+                    </Button>
+                </CardFooter>
             </Card>
         </>
     );
