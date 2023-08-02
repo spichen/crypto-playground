@@ -1,19 +1,21 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Handle, Position, useNodes, useNodeId, useReactFlow } from "reactflow";
 import Hashes from "jshashes";
 import { useEffect } from "react";
 import {
     Card,
+    Text,
     CardBody,
-    CardFooter,
-    FormControl,
-    FormLabel,
-    Badge,
-    Input,
-    VStack,
-    Button,
+    Tag,
+    OrderedList,
+    ListItem,
+    Tooltip,
+    TagLabel,
+    Flex,
+    Stack,
     CardHeader,
     Heading,
+    Box,
 } from "@chakra-ui/react";
 
 var MD5 = new Hashes.MD5();
@@ -24,9 +26,9 @@ const BlockNode = ({ data }) => {
     const { setNodes } = useReactFlow();
 
     const [hash, setHash] = useState("");
-    const [mineHash, setMineHash] = useState("");
     const [preHash, setPreHash] = useState(0);
     const [nonce, setNonce] = useState(0);
+    const [transactions, setTransactions] = useState([]);
     const thisNodeIndex = nodes.findIndex((node) => node.id === nodeId);
 
     const findPreviousBlockNode = (currentNodeIndex) => {
@@ -47,6 +49,7 @@ const BlockNode = ({ data }) => {
 
     useEffect(() => {
         if (!data.isMined) {
+            setTransactions(data.memPool);
             setHash(MD5.hex(data.memPool + previousNodeHash + nonce));
         }
     }, [data.memPool, nonce]);
@@ -86,52 +89,63 @@ const BlockNode = ({ data }) => {
                     <Heading size="md"> {nodeId}</Heading>
                 </CardHeader>
                 <CardBody>
-                    <VStack spacing="24px">
-                        <FormControl>
-                            <FormLabel>Hash</FormLabel>
-                            <Input
-                                id="hash"
-                                name="hash"
-                                className="nodrag"
-                                value={hash}
-                                disabled
-                            />
-                        </FormControl>
-
-                        <FormControl>
-                            <FormLabel>Previous Block Hash</FormLabel>
-                            <Input
-                                id="pre-hash"
-                                name="pre-hash"
-                                value={preHash}
-                                className="nodrag"
-                                disabled
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Nonce</FormLabel>
-                            <Input
-                                id="nonce"
-                                name="nonce"
-                                value={nonce}
-                                className="nodrag"
-                                disabled
-                            />
-                        </FormControl>
-                    </VStack>
+                    <Stack spacing="16px">
+                        <Box>
+                            <Text fontSize="xs">Hash</Text>
+                            <Tag size="md" variant="solid" colorScheme="green">
+                                <TagLabel>{hash}</TagLabel>
+                            </Tag>
+                        </Box>
+                        <Flex justifyContent="center">
+                            <Tag size="md" variant="outline" colorScheme="blue">
+                                <TagLabel>=</TagLabel>
+                            </Tag>
+                        </Flex>
+                        <Box>
+                            <Text fontSize="xs">Previous Node Hash</Text>
+                            <Tag size="md" variant="subtle" colorScheme="cyan">
+                                <TagLabel>{preHash}</TagLabel>
+                            </Tag>
+                        </Box>
+                        <Flex justifyContent="center">
+                            <Tag size="md" variant="outline" colorScheme="blue">
+                                <TagLabel>+</TagLabel>
+                            </Tag>
+                        </Flex>
+                        <Box>
+                            <Text fontSize="xs">Nonce</Text>
+                            <Tag size="md" variant="subtle" colorScheme="cyan">
+                                <TagLabel>{nonce}</TagLabel>
+                            </Tag>
+                        </Box>
+                        <Flex justifyContent="center">
+                            <Tag size="md" variant="outline" colorScheme="blue">
+                                <TagLabel>+</TagLabel>
+                            </Tag>
+                        </Flex>
+                        <Box>
+                            <Text fontSize="xs">Transactions</Text>
+                            <Stack>
+                                {transactions.map((tx) => (
+                                    <Tooltip
+                                        key={MD5.hex(JSON.stringify(tx))}
+                                        label={JSON.stringify(tx)}
+                                    >
+                                        <Tag
+                                            size="md"
+                                            variant="subtle"
+                                            colorScheme="cyan"
+                                        >
+                                            <TagLabel>
+                                                {MD5.hex(JSON.stringify(tx))}
+                                            </TagLabel>
+                                        </Tag>
+                                    </Tooltip>
+                                ))}
+                            </Stack>
+                        </Box>
+                    </Stack>
                 </CardBody>
-
-                <CardFooter>
-                    {mineHash && (
-                        <div>
-                            {hash === mineHash ? (
-                                <Badge colorScheme="green">Valid</Badge>
-                            ) : (
-                                <Badge colorScheme="red">Invalid</Badge>
-                            )}
-                        </div>
-                    )}
-                </CardFooter>
             </Card>
 
             <Handle type="source" position={Position.Right} />

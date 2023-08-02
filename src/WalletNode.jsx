@@ -1,14 +1,15 @@
 import {
     Card,
     CardBody,
-    CardFooter,
+    Box,
     FormControl,
     FormLabel,
     Input,
-    VStack,
+    Stack,
     CardHeader,
     Heading,
     Button,
+    StackDivider,
 } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import { useCallback, useState } from "react";
@@ -40,10 +41,10 @@ const WalletNode = ({ id, data }) => {
                     <Heading size="md"> {id}</Heading>
                 </CardHeader>
                 <CardBody>
-                    <VStack spacing="24px">
+                    <Stack divider={<StackDivider />} spacing="24px">
                         <FormControl>
                             <FormLabel>
-                                Address
+                                Address{" "}
                                 <CopyIcon
                                     onClick={() => {
                                         console.log("something ");
@@ -53,7 +54,6 @@ const WalletNode = ({ id, data }) => {
                                     }}
                                 />
                             </FormLabel>
-
                             <Input
                                 id="address"
                                 name="address"
@@ -61,39 +61,38 @@ const WalletNode = ({ id, data }) => {
                                 value={publicAddress}
                                 disabled
                             />
-
-                            <FormLabel>Amount</FormLabel>
-                            <Input
-                                id="transactionAmount"
-                                name="transactionAmount"
-                                className="nodrag"
-                                value={transactionAmount}
-                                placeholder="transaction amount"
-                                onChange={onChange}
-                            />
-                            <FormLabel>To</FormLabel>
-                            <Input
-                                id="toAddress"
-                                name="toAddress"
-                                className="nodrag"
-                                placeholder="to address"
-                                onChange={(evt) => {
-                                    setToAddress(evt.target.value);
-                                }}
-                            />
                         </FormControl>
-                    </VStack>
+                        <Box>
+                            <Stack spacing="16px">
+                                <Heading size="sm">Transfer</Heading>
+                                <Input
+                                    id="toAddress"
+                                    name="toAddress"
+                                    className="nodrag"
+                                    placeholder="To"
+                                    onChange={(evt) => {
+                                        setToAddress(evt.target.value);
+                                    }}
+                                />
+                                <Input
+                                    id="transactionAmount"
+                                    name="transactionAmount"
+                                    className="nodrag"
+                                    value={transactionAmount}
+                                    placeholder="Amount"
+                                    onChange={onChange}
+                                />
+                                <Button
+                                    colorScheme="teal"
+                                    size="md"
+                                    onClick={proceedTransact}
+                                >
+                                    Transfer
+                                </Button>
+                            </Stack>
+                        </Box>
+                    </Stack>
                 </CardBody>
-
-                <CardFooter>
-                    <Button
-                        colorScheme="teal"
-                        size="lg"
-                        onClick={proceedTransact}
-                    >
-                        Proceed Transact
-                    </Button>
-                </CardFooter>
             </Card>
         </>
     );

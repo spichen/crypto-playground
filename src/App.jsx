@@ -12,12 +12,14 @@ import ReactFlow, {
 import BlockNode from "./BlockNode.jsx";
 import "reactflow/dist/style.css";
 import {
+    Heading,
     ChakraProvider,
     Button,
     Icon,
     Link,
     Flex,
     Box,
+    Highlight,
 } from "@chakra-ui/react";
 import { BsGithub } from "react-icons/bs";
 import WalletNode from "./WalletNode.jsx";
@@ -45,7 +47,7 @@ export default function App() {
         const lastNode = filteredNode[filteredNode.length - 1];
         const newNode = {
             id: `block-${id}`,
-            position: { x: lastNode.position.x + 300, y: 500 },
+            position: { x: lastNode.position.x + 400, y: 50 },
             data: {
                 label: `Block ${id}`,
                 memPool,
@@ -63,7 +65,7 @@ export default function App() {
         {
             id: "block-1",
             data: { label: "Block 1", memPool, addBlockNode, isMined: false },
-            position: { x: 100, y: 500 },
+            position: { x: 100, y: 50 },
             type: "blockNode",
         },
     ];
@@ -72,7 +74,7 @@ export default function App() {
         {
             id: "wallet-1",
             data: { label: "Wallet", onTransact },
-            position: { x: 100, y: 50 },
+            position: { x: 100, y: 500 },
             type: "walletNode",
         },
     ];
@@ -99,7 +101,7 @@ export default function App() {
         const lastNode = filteredNode[filteredNode.length - 1];
         const newNode = {
             id: `wallet-${id}`,
-            position: { x: lastNode.position.x + 300, y: 50 },
+            position: { x: lastNode.position.x + 300, y: 500 },
             data: { label: `Wallet ${id}`, onTransact },
             type: "walletNode",
             height: 400,
@@ -181,27 +183,45 @@ export default function App() {
                         nodeTypes={nodeTypes}
                         fitView
                     >
-                        <Flex
-                            justifyContent="right"
-                            minWidth="max-content"
-                            margin="3"
-                        >
-                            <Link
-                                href="https://github.com/Mubeena17/blockchain-visualized"
-                                isExternal
-                            >
-                                <Icon as={BsGithub} w={8} h={8} />
-                            </Link>
-                        </Flex>
-                        <Panel position="bottom-center">
-                            <Flex gap={2}>
+                        <Panel position="top-left">
+                            <Flex align="center">
+                                <Heading as="h2" size="xl">
+                                    Blockchain{" "}
+                                    <Highlight
+                                        query="spotlight"
+                                        styles={{
+                                            px: "2",
+                                            py: "1",
+                                            rounded: "full",
+                                            bg: "red.100",
+                                        }}
+                                    >
+                                        Simulator
+                                    </Highlight>
+                                </Heading>
+
                                 <Button
                                     colorScheme="teal"
-                                    size="lg"
+                                    size="sm"
                                     onClick={addWalletNode}
+                                    marginLeft="16px"
                                 >
                                     Add Wallet
                                 </Button>
+                            </Flex>
+                        </Panel>
+                        <Panel position="top-right">
+                            <Flex
+                                justifyContent="right"
+                                minWidth="max-content"
+                                margin="3"
+                            >
+                                <Link
+                                    href="https://github.com/Mubeena17/blockchain-visualized"
+                                    isExternal
+                                >
+                                    <Icon as={BsGithub} w={8} h={8} />
+                                </Link>
                             </Flex>
                         </Panel>
                         <Controls />
