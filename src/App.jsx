@@ -50,7 +50,7 @@ export default function App() {
             position: { x: lastNode.position.x + 400, y: 50 },
             data: {
                 label: `Block ${id}`,
-                memPool,
+                memPool: [],
                 addBlockNode,
                 isMined: false,
             },
@@ -157,8 +157,8 @@ export default function App() {
 
         if (lastBlockNode.hash && lastBlockNode.hash.charAt(0) === "0") {
             updateNode();
-            addBlockNode();
             setMemPool([]);
+            addBlockNode();
         }
         const edges = filteredNode.slice(1).map((item) => {
             const index = filteredNode.findIndex((n) => n.id === item.id);

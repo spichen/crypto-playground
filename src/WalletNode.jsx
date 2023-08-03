@@ -47,7 +47,6 @@ const WalletNode = ({ id, data }) => {
                                 Address{" "}
                                 <CopyIcon
                                     onClick={() => {
-                                        console.log("something ");
                                         navigator.clipboard.writeText(
                                             publicAddress
                                         );
