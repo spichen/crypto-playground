@@ -5,6 +5,7 @@ var MD5 = new Hashes.MD5();
 const useMiner = (lastBlockHash, addBlock) => {
     const [nonce, setNonce] = useState(0);
     const [memPool, setMemPool] = useState([]);
+    const [hash, setHash] = useState();
 
     const addTransactionToMemPool = (transaction) => {
         setMemPool((_memPool) => {
@@ -22,7 +23,7 @@ const useMiner = (lastBlockHash, addBlock) => {
 
     useEffect(() => {
         const hash = MD5.hex(memPool + lastBlockHash + nonce);
-
+        setHash(hash);
         if (hash.charAt(0) === "0") {
             addBlock({
                 hash,
@@ -38,6 +39,12 @@ const useMiner = (lastBlockHash, addBlock) => {
 
     return {
         addTransactionToMemPool,
+        miningData: {
+            hash,
+            lastBlockHash,
+            nonce,
+            memPool,
+        },
     };
 };
 

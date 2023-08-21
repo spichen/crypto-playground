@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNodesState, useEdgesState } from "reactflow";
 
-const useCryptoNodes = (blocks, wallets) => {
+const useCryptoNodes = (blocks, wallets, miningData) => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -31,6 +31,18 @@ const useCryptoNodes = (blocks, wallets) => {
                     };
                 });
 
+            const minerNode = {
+                id: `miner`,
+                position: {
+                    x: blocks.length * 400,
+                    y: 50,
+                },
+                data: miningData,
+                type: "minerNode",
+                height: 400,
+                width: 100,
+            };
+
             const newWallets = wallets
                 .filter(
                     (wallet) =>
@@ -54,7 +66,7 @@ const useCryptoNodes = (blocks, wallets) => {
                     };
                 });
 
-            return [...nodes, ...newBlocks, ...newWallets];
+            return [...nodes, ...newBlocks, ...newWallets, minerNode];
         });
         setEdges(
             blocks.map((block) => {
@@ -68,7 +80,7 @@ const useCryptoNodes = (blocks, wallets) => {
                 return null;
             })
         );
-    }, [blocks, wallets]);
+    }, [blocks, wallets, miningData]);
 
     return {
         nodes,

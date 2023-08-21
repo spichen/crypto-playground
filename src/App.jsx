@@ -23,12 +23,17 @@ import useBlocks from "./hooks/useBlocks.js";
 import useWallets from "./hooks/useWallets.js";
 import useMiner from "./hooks/useMiner.js";
 import useCryptoNodes from "./hooks/useCryptoNodes.js";
+import MinerNode from "./components/MinerNode.jsx";
 
-const nodeTypes = { blockNode: BlockNode, walletNode: WalletNode };
+const nodeTypes = {
+    blockNode: BlockNode,
+    walletNode: WalletNode,
+    minerNode: MinerNode,
+};
 
 export default function App() {
     const { blocks, addBlock } = useBlocks();
-    const { addTransactionToMemPool } = useMiner(
+    const { addTransactionToMemPool, miningData } = useMiner(
         blocks.length ? blocks[blocks.length - 1].hash : 0,
         addBlock
     );
@@ -36,7 +41,8 @@ export default function App() {
 
     const { nodes, onNodesChange, edges, onEdgesChange } = useCryptoNodes(
         blocks,
-        wallets
+        wallets,
+        miningData
     );
 
     return (

@@ -12,14 +12,14 @@ import {
     Box,
 } from "@chakra-ui/react";
 
-const MiningNode = ({ data }) => {
+const MinerNode = ({ data }) => {
     const nodeId = useNodeId();
 
     return (
         <>
             <Card variant="outline">
                 <CardHeader>
-                    <Heading size="md">Block</Heading>
+                    <Heading size="md">Mining</Heading>
                 </CardHeader>
                 <CardBody>
                     <Stack spacing="16px">
@@ -32,7 +32,7 @@ const MiningNode = ({ data }) => {
                         <Box>
                             <Text fontSize="xs">Previous Node Hash</Text>
                             <Tag size="md" variant="subtle" colorScheme="cyan">
-                                <TagLabel>{data.preHash}</TagLabel>
+                                <TagLabel>{data.lastBlockHash}</TagLabel>
                             </Tag>
                         </Box>
                         <Box>
@@ -44,7 +44,7 @@ const MiningNode = ({ data }) => {
                         <Box>
                             <Text fontSize="xs">Transactions</Text>
                             <Stack>
-                                {data.transactions.map((tx) => (
+                                {data.memPool.map((tx) => (
                                     <Tooltip
                                         key={tx.txid}
                                         label={JSON.stringify(tx)}
@@ -69,4 +69,4 @@ const MiningNode = ({ data }) => {
         </>
     );
 };
-export default MiningNode;
+export default MinerNode;
