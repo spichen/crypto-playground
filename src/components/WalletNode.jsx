@@ -17,28 +17,29 @@ import { useCallback, useState } from "react";
 import elliptic from "elliptic";
 let ec = new elliptic.ec("secp256k1");
 
+/*
+ pubKey, transfer
+*/
 const WalletNode = ({ id, data }) => {
     const [transactionAmount, setTransactionAmount] = useState("");
     const [toAddress, setToAddress] = useState("");
-    const keyPair = ec.genKeyPair();
-    const [publicAddress, setPublicAddress] = useState(
-        keyPair.getPublic().encodeCompressed("hex")
-    );
     const onChange = useCallback((evt) => {
         setTransactionAmount(evt.target.value);
     }, []);
 
-    const { onTransact } = data;
+    const { transfer, publicAddress } = data;
 
     const proceedTransact = () => {
-        onTransact(publicAddress, toAddress, transactionAmount);
+        transfer(toAddress, transactionAmount);
     };
 
     return (
         <>
             <Card variant="outline">
                 <CardHeader>
-                    <Heading size="md"> {id}</Heading>
+                    <Heading size="md" noOfLines={1}>
+                        Wallet
+                    </Heading>
                 </CardHeader>
                 <CardBody>
                     <Stack divider={<StackDivider />} spacing="24px">
