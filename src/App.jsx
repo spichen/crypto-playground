@@ -1,4 +1,4 @@
-import React from "react";
+import { createContext } from 'react';
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -31,13 +31,18 @@ const nodeTypes = {
     minerNode: MinerNode,
 };
 
+export const BlockchainContext = createContext({ blocks: [] });
+
 export default function App() {
-    const { blocks, addBlock } = useBlocks();
+    const { blocks, addBlock, getTransactionForAddress } = useBlocks();
     const { addTransactionToMemPool, miningData } = useMiner(
         blocks.length ? blocks[blocks.length - 1].hash : 0,
         addBlock
     );
-    const { generateWallet, wallets } = useWallets(addTransactionToMemPool);
+    const { generateWallet, wallets } = useWallets(
+        addTransactionToMemPool,
+        getTransactionForAddress
+    );
 
     const { nodes, onNodesChange, edges, onEdgesChange } = useCryptoNodes(
         blocks,
@@ -47,63 +52,65 @@ export default function App() {
 
     return (
         <ChakraProvider>
-            <div style={{ width: "100vw", height: "100vh" }}>
-                <ReactFlowProvider>
-                    <ReactFlow
-                        nodes={nodes}
-                        edges={edges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        nodeTypes={nodeTypes}
-                        fitView
-                    >
-                        <Panel position="top-left">
-                            <Flex align="center">
-                                <Heading as="h2" size="xl">
-                                    Crypto{" "}
-                                    <Highlight
-                                        query="spotlight"
-                                        styles={{
-                                            px: "2",
-                                            py: "1",
-                                            rounded: "full",
-                                            bg: "red.100",
-                                        }}
-                                    >
-                                        Playground
-                                    </Highlight>
-                                </Heading>
+            <BlockchainContext.Provider value={{ blocks }}>
+                <div style={{ width: "100vw", height: "100vh" }}>
+                    <ReactFlowProvider>
+                        <ReactFlow
+                            nodes={nodes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+                            nodeTypes={nodeTypes}
+                            fitView
+                        >
+                            <Panel position="top-left">
+                                <Flex align="center">
+                                    <Heading as="h2" size="xl">
+                                        Crypto{" "}
+                                        <Highlight
+                                            query="spotlight"
+                                            styles={{
+                                                px: "2",
+                                                py: "1",
+                                                rounded: "full",
+                                                bg: "red.100",
+                                            }}
+                                        >
+                                            Playground
+                                        </Highlight>
+                                    </Heading>
 
-                                <Button
-                                    colorScheme="teal"
-                                    size="sm"
-                                    onClick={generateWallet}
-                                    marginLeft="16px"
+                                    <Button
+                                        colorScheme="teal"
+                                        size="sm"
+                                        onClick={generateWallet}
+                                        marginLeft="16px"
+                                    >
+                                        Add Wallet
+                                    </Button>
+                                </Flex>
+                            </Panel>
+                            <Panel position="top-right">
+                                <Flex
+                                    justifyContent="right"
+                                    minWidth="max-content"
+                                    margin="3"
                                 >
-                                    Add Wallet
-                                </Button>
-                            </Flex>
-                        </Panel>
-                        <Panel position="top-right">
-                            <Flex
-                                justifyContent="right"
-                                minWidth="max-content"
-                                margin="3"
-                            >
-                                <Link
-                                    href="https://github.com/Mubeena17/blockchain-visualized"
-                                    isExternal
-                                >
-                                    <Icon as={BsGithub} w={8} h={8} />
-                                </Link>
-                            </Flex>
-                        </Panel>
-                        <Controls />
-                        <MiniMap />
-                        <Background variant="dots" gap={12} size={1} />
-                    </ReactFlow>
-                </ReactFlowProvider>
-            </div>
+                                    <Link
+                                        href="https://github.com/Mubeena17/blockchain-visualized"
+                                        isExternal
+                                    >
+                                        <Icon as={BsGithub} w={8} h={8} />
+                                    </Link>
+                                </Flex>
+                            </Panel>
+                            <Controls />
+                            <MiniMap />
+                            <Background variant="dots" gap={12} size={1} />
+                        </ReactFlow>
+                    </ReactFlowProvider>
+                </div>
+            </BlockchainContext.Provider>
         </ChakraProvider>
     );
 }

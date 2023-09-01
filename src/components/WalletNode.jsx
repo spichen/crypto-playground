@@ -15,6 +15,7 @@ import { CopyIcon } from "@chakra-ui/icons";
 import { useCallback, useState } from "react";
 
 import elliptic from "elliptic";
+import useBalance from "../hooks/useBalance";
 let ec = new elliptic.ec("secp256k1");
 
 /*
@@ -26,8 +27,9 @@ const WalletNode = ({ id, data }) => {
     const onChange = useCallback((evt) => {
         setTransactionAmount(evt.target.value);
     }, []);
-
     const { transfer, publicAddress } = data;
+
+    const { getBalance } = useBalance(publicAddress)
 
     const proceedTransact = () => {
         transfer(toAddress, transactionAmount);
@@ -38,7 +40,7 @@ const WalletNode = ({ id, data }) => {
             <Card variant="outline">
                 <CardHeader>
                     <Heading size="md" noOfLines={1}>
-                        Wallet
+                        Wallet {getBalance()}
                     </Heading>
                 </CardHeader>
                 <CardBody>

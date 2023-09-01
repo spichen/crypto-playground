@@ -17,7 +17,7 @@ const useMiner = (lastBlockHash, addBlock) => {
         let intervalID;
         intervalID = setInterval(() => {
             setNonce((nonce) => nonce + 1);
-        }, 200);
+        }, 300);
         return () => clearInterval(intervalID);
     }, []);
 
